@@ -95,25 +95,27 @@ app.post("/api/users", (req, res) => {
 app.post("/api/users/:_id/exercises", (req, res) => {
 	let { description, duration, date } = req.body;
 
-	if (!date) {
-		date = new Date().toDateString();
-	}
-
-	User.findByIdAndUpdate(
-		req.params._id,
-		{ $push: { log: { description, duration, date } } },
-		{ new: true },
-		(err, user) => {
-			if (err) return console.error(err);
-			res.json({
-				username: user.username,
-				description: user.log[user.log.length - 1].description,
-				duration: user.log[user.log.length - 1].duration,
-				date: user.log[user.log.length - 1].date,
-				_id: user._id,
-			});
+	if (req.params._id) {
+		if (!date) {
+			date = new Date().toDateString();
 		}
-	);
+
+		User.findByIdAndUpdate(
+			req.params._id,
+			{ $push: { log: { description, duration, date } } },
+			{ new: true },
+			(err, user) => {
+				if (err) return console.error(err);
+				res.json({
+					username: user.username,
+					description: user.log[user.log.length - 1].description,
+					duration: user.log[user.log.length - 1].duration,
+					date: user.log[user.log.length - 1].date,
+					_id: user._id,
+				});
+			}
+		);
+	}
 });
 
 const listener = app.listen(process.env.PORT || 3000, () => {

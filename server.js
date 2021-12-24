@@ -35,13 +35,39 @@ const User = mongoose.model("User", userSchema);
 app.use("/api/users", bodyParser.urlencoded({ extended: false }));
 
 app.get("/api/users/:_id/logs", (req, res) => {
+	const { from, to, limit } = req.query;
+
 	User.findById(req.params._id, (err, user) => {
 		if (err) return console.error(err);
+		let log = user.log;
+
+		if (from && to) {
+			const fromDate = new Date(from);
+			const toDate = new Date(to);
+			log = log.filter(
+				(exercise) =>
+					new Date(exercise.date) > fromDate && new Date(exercise.date) < toDate
+			);
+		}
+
+		if (from) {
+			const fromDate = new Date(from);
+			log = log.filter((exercise) => new Date(exercise.date) > fromDate);
+		}
+
+		if (to) {
+			const toDate = new Date(to);
+			log = log.filter((exercise) => new Date(exercise.date) < toDate);
+		}
+
+		if (limit) {
+			log = user.log.filter((exercise, index) => index < limit);
+		}
 		res.json({
 			username: user.username,
-			count: user.log.length,
+			count: log.length,
 			_id: user._id,
-			log: user.log,
+			log: log,
 		});
 	});
 });

@@ -96,6 +96,10 @@ app.post("/api/users/:_id/exercises", (req, res) => {
 	let { description, duration, date } = req.body;
 
 	if (req.params._id) {
+		if (duration) {
+			duration = Number(duration);
+		}
+
 		if (!date) {
 			date = new Date().toDateString();
 		}
@@ -108,9 +112,9 @@ app.post("/api/users/:_id/exercises", (req, res) => {
 				if (err) return console.error(err);
 				res.json({
 					username: user.username,
-					description: user.log[user.log.length - 1].description,
-					duration: user.log[user.log.length - 1].duration,
-					date: user.log[user.log.length - 1].date,
+					description: description,
+					duration: duration,
+					date: date,
 					_id: user._id,
 				});
 			}

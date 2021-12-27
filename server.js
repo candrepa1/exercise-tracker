@@ -101,9 +101,10 @@ app.post("/api/users/:_id/exercises", (req, res) => {
 		}
 
 		if (!date) {
-			date = new Date().toDateString();
+			date = new Date();
 		}
 
+		date = new Date(date).toDateString();
 		User.findByIdAndUpdate(
 			req.params._id,
 			{ $push: { log: { description, duration, date } } },
